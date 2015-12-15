@@ -13,7 +13,7 @@ void Solver::sweep_esa(int start_TID[])
 	const real weight = 1.5707963267948966 / n_a / n_a;
 	std::fill(phi.begin(), phi.end(), 0.0);
 	int totNFM_y = mesh.ny, totNFM_x = mesh.nx, totNFM_z = mesh.nz;
-	double Delta_y = mesh.dy, Delta_z = mesh.dz, Delta_x = mesh.dx;
+	double Delta_y = mesh.dy[0], Delta_z = mesh.dz[0], Delta_x = mesh.dx[0];
 	bool forward_x, forward_y, forward_z;
 	//The arrangement of bd_info_x or _y is [blockID_X][blockID_Y][blockID_Z][z][x or y] to realize unit strid
 	//one row is wasted along each direction

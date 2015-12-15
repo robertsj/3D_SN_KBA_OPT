@@ -1,0 +1,10 @@
+# This is an example of a relatively complete configuration
+
+rm CMakeCache.txt
+cmake                              \
+CMAKE_CXX_FLAGS="-Wall -ansi -pedantic"                         \
+-G "Eclipse CDT4 - Unix Makefiles"                              \
+-D CMAKE_VERBOSE_MAKEFILE=ON                                    \
+-D CMAKE_BUILD_TYPE=Release                                     \
+-D CMAKE_INSTALL_PREFIX=/home/robertsj/Research/3D_SN_KBA_OPT_BUILD/install   \
+/home/robertsj/Research/3D_SN_KBA_OPT

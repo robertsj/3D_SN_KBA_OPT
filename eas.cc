@@ -20,9 +20,9 @@ void Solver::sweep_eas(int start_TID[])
 	real muDelta[n_a], etaDelta[n_a], xiDelta[n_a], sum[n_a];
 	for(int a = 0; a < n_a; a++)
 	{
-		muDelta[a] = 2.0 * mu[a] / mesh.dy;
-		etaDelta[a] = 2.0 * eta[a] / mesh.dx;
-		xiDelta[a] = 2.0 * xi[a] / mesh.dz;
+		muDelta[a] = 2.0 * mu[a] / mesh.dy[0];
+		etaDelta[a] = 2.0 * eta[a] / mesh.dx[0];
+		xiDelta[a] = 2.0 * xi[a] / mesh.dz[0];
 		sum[a] = muDelta[a] + etaDelta[a] + xiDelta[a];
 	}
 

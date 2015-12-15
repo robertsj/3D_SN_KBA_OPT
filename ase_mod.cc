@@ -15,9 +15,9 @@ void Solver::sweep_ase_mod()
 	real muDelta[n_a], etaDelta[n_a], xiDelta[n_a], sum[n_a];
 	for(int a = 0; a < n_a; a++)
 	{
-		muDelta[a]  = 2.0 * mu[a] / mesh.dx;
-		etaDelta[a] = 2.0 * eta[a] / mesh.dy;
-		xiDelta[a]  = 2.0 * xi[a] / mesh.dz;
+		muDelta[a]  = 2.0 * mu[a] / mesh.dx[0];
+		etaDelta[a] = 2.0 * eta[a] / mesh.dy[0];
+		xiDelta[a]  = 2.0 * xi[a] / mesh.dz[0];
 		sum[a]      = muDelta[a] + etaDelta[a] + xiDelta[a];
 	}
 

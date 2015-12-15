@@ -31,7 +31,8 @@ public:
   };
 
   Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_z);
-  void print_blocks();
+  void print_blocks() const;
+  void print_summary() const;
 
   // go from (i, j, k) to cardinal index
   int ijk_to_cell(int i, int j, int k) const
@@ -63,7 +64,7 @@ public:
   }
 
   int nx, ny, nz, ncell;            // # of cells along x, y, and z and total #
-  real dx, dy, dz;               // cell widths
+  vec_dbl dx, dy, dz;               // cell widths
   int nmat;                         // number of materials
   vec_int mat_id;                   // material id for each cell
   int nbx, nby, nbz;                // number of blocks along x, y, and z

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <ctime>
+#include <cstdio>
 #include <cstdlib>
 #include <cassert>
 #include <string>
@@ -15,9 +16,12 @@ using namespace std;
 typedef std::vector<real> v_dbl;
 #ifdef FLOAT
 typedef float real;
+const int factor = 16;
 #else
 typedef double real;
+const int factor = 8;
 #endif
+
 
 //----------------------------------------------------------------------------//
 Solver::Solver(int n_eg_in, int n_a_in, int cm_xy_in, int fm_xy_in,
@@ -28,7 +32,7 @@ Solver::Solver(int n_eg_in, int n_a_in, int cm_xy_in, int fm_xy_in,
 , upscatter(upscatter_in)
 , iter(iter_in)
 , blocksize_z(zbs)
-, mesh(cm_xy_in, fm_xy_in, cm_z_in, fm_z_in, xbs, xbs, zbs)
+, mesh(cm_xy_in, fm_xy_in, cm_z_in, fm_z_in, xbs, ybs, zbs)
 {
 
 	cout << "input parameters \n" << "# of energy groups: " << n_eg << "\n"
@@ -42,7 +46,7 @@ Solver::Solver(int n_eg_in, int n_a_in, int cm_xy_in, int fm_xy_in,
 			<< "x block size: " << xbs << endl
 			<< "y block size: " << ybs << endl
 			<< "z block size: " << zbs << endl;
-
+	//mesh.print_summary();
 	phi_size = mesh.ncell * n_eg;
 	phi.resize(phi_size);
 	Q.resize(phi_size);
@@ -157,7 +161,7 @@ void Solver::Calculate(std::string order, int num_threads)
 	real err_phi = 1.0;
 	int it = 0;
 
-	while(it < iter and err_phi > eps_phi)
+	while (it < iter)
 	{
 		// store old phi
 		v_dbl phi0(phi);
@@ -192,7 +196,7 @@ void Solver::Calculate(std::string order, int num_threads)
 				}
 
 
-		real sweep_time = omp_get_wtime();
+		double sweep_time = omp_get_wtime();
 
 		if (order == "aes")
 			sweep_aes(start_TID);
@@ -276,6 +280,15 @@ void Solver::Calculate(std::string order, int num_threads)
 			cout << endl;}
 		cout << "\nerr_phi is " << err_phi << "\n\n";
 	}
+
+	double flop = mesh.nx*mesh.ny*mesh.nz*n_a*8.*n_eg*iter*25;
+	double gflops = flop/1.e9/time_used_sweep;
+    printf("TIME    = %f \n", time_used_sweep);
+    printf("FLOPS   = %f \n", flop);
+	printf("GLOPS/s = %f \n", gflops);
+	double peak = factor*3.1*num_threads;
+	printf("PEAK    = %f \n", peak);
+    printf("EFF o/o = %f \n", gflops/peak*100.);
 }
 
 real Solver::get_sweeptime(){

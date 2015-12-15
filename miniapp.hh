@@ -72,8 +72,8 @@ public:
 	v_dbl phi, Q;
 	v_dbl SigT;
 	real*** SigS;
-	real time_used_sweep;
-	real time_used_total;
+	double time_used_sweep;
+	double time_used_total;
 	const Mesh mesh;
 
 	// variables used in old sweep functions

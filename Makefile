@@ -4,9 +4,10 @@
 
 PROGRAM  = 3DKBA
 CC       = icpc
-DEBUG    = no
+DEBUG    = yes
 OPTIMIZE = yes
 PROFILE  = no
+FLOAT    = float
 
 #===============================================================================
 # Object Files
@@ -29,14 +30,13 @@ OBJECTS = \
   sea.o \
   ase.o \
   aes.o \
-  
 
 #===============================================================================
 # COMPILER FLAGS
 #===============================================================================
 
 ifeq ($(CC), icpc)
-	CCFLAGS += -openmp
+	CCFLAGS += -openmp -qopt-report=5 -mavx #-no-prec-div
 else
 	CCFLAGS += -fopenmp
 endif
@@ -51,12 +51,18 @@ ifeq ($(DEBUG),yes)
   CCFLAGS += -g
 endif
 
+ifeq ($(FLOAT),float)
+  CCFLAGS += -DFLOAT
+endif
 #===============================================================================
 # Targets
 #===============================================================================
 
 $(PROGRAM): $(OBJECTS)
 	$(CC) $(OBJECTS) -o $@ $(CCFLAGS) $(LDFLAGS) $(LIB) $(INCLUDE)
+
+div_vs_mult:
+	$(CC) div_vs_mult.cc -o $@ $(CCFLAGS) $(LDFLAGS) $(LIB) $(INCLUDE)
 
 clean:
 	@rm -f *.o $(PROGRAM)
