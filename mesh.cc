@@ -6,7 +6,7 @@
 #include "auxiliary_function.hh"
 
 //----------------------------------------------------------------------------//
-Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_z)
+Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_z, int nt_in)
 : nx(fm_xy * cm_xy)
 , ny(fm_xy * cm_xy)
 , nz(fm_z  * cm_z)
@@ -26,7 +26,10 @@ Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_
 , j_s(nby)
 , k_s(nbz)
 , planes(8)
+, chunks(8)
+, nt(nt_in)
 {
+
   printf("mesh details: \n");
   printf("    nx = %i\n", nx);
   printf("    ny = %i\n", ny);
@@ -62,6 +65,7 @@ Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_
   }
 
   // define planes
+  vec2_int column_planes(8, vec_int(nbx*nby));
   int np = nbx + nby + nbz - 2;
   for (int o = 0; o < 8; ++o)
   {
@@ -85,12 +89,38 @@ Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_
               ijk[1] = j;
               ijk[2] = k;
               planes[o][p].push_back(ijk);
+              if (kk == 0)
+                column_planes[o][ii+jj*nbx] = p;
             }
           }
         }
       }
     }
-  } // end octant
+  }
+
+  // define chunks
+
+  vec_int column_start(nbx*nby, 0);
+  vec_int nct(nt, 0);
+  for (int c = 0; c < nbx*nby; ++c)
+  {
+    int i = c % nbx;
+    int j = c / nby;
+    int t = c % nt;
+    int p = column_planes[0][i+j*nbx];
+    int step = 0;
+    if (nct[t] == 0) step = p;
+    column_start[c] = nct[t] + step;
+    if (p > column_start[c])
+      column_start[c] = p;
+    for (int k = 0; k < nbz; ++k)
+    {
+      chunks[0];
+
+      nct[t]++;
+    }
+    nct[t] += step;
+  } //
 
   // block indices
   i_s.resize(nbx, 0);

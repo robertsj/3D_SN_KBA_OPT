@@ -30,7 +30,7 @@ public:
     X, Y, Z
   };
 
-  Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_z);
+  Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_z, int nt = 1);
   void print_blocks() const;
   void print_summary() const;
 
@@ -71,6 +71,8 @@ public:
   vec_int xbs, ybs, zbs;            // block sizes
   vec_int i_s, j_s, k_s;            // starting cell indices for each block
   vec4_int planes;                  // planes with indices
+  vec4_int chunks;                  // planes with indices
+  int nt;                           // number threads
 };
 
 #endif
