@@ -99,9 +99,10 @@ Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_
   }
 
   // define chunks
-
   vec_int column_start(nbx*nby, 0);
   vec_int nct(nt, 0);
+
+  vec2_int tmp_chunks;
   for (int c = 0; c < nbx*nby; ++c)
   {
     int i = c % nbx;
@@ -109,18 +110,72 @@ Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_
     int t = c % nt;
     int p = column_planes[0][i+j*nbx];
     int step = 0;
-    if (nct[t] == 0) step = p;
+    if (nct[t] == 0)
+      step = p;
     column_start[c] = nct[t] + step;
     if (p > column_start[c])
       column_start[c] = p;
+    //printf("I=%i, J=%i, C=%i, T=%i, P=%i, CS=%i\n",i,j,c,t,p,column_start[c]);
     for (int k = 0; k < nbz; ++k)
     {
-      chunks[0];
-
+      int ci = nct[t]+step;
+      vec_int chunk(4, 0);
+      chunk[0] = i;
+      chunk[1] = j;
+      chunk[2] = k;
+      chunk[3] = ci;
+      tmp_chunks.push_back(chunk);
       nct[t]++;
     }
     nct[t] += step;
   } //
+
+//  for (int i = 0; i < tmp_chunks.size(); ++i)
+//  {
+//    printf("(%i, %i, %i, %i) \n",
+//        tmp_chunks[i][0],tmp_chunks[i][1],tmp_chunks[i][2],tmp_chunks[i][3]);
+//  }
+
+  int num_chunks = tmp_chunks[tmp_chunks.size()-1][3]+1;
+  for (int o = 0; o < 8; ++o)
+  {
+    chunks[o].resize(num_chunks);
+    for (int c = 0; c < tmp_chunks.size(); ++c)
+    {
+      int I = tmp_chunks[c][0];
+      int J = tmp_chunks[c][1];
+      int K = tmp_chunks[c][2];
+      int C = tmp_chunks[c][3];
+      if (o == 1 or o == 2 or o == 5 or o == 6)
+        I = nbx - I - 1;
+      if (o == 2 or o == 3 or o == 6 or o == 7)
+        J = nby - J - 1;
+      if (o > 3)
+        K = nbz - K - 1;
+      vec_int chunk(3);
+      chunk[0] = I; chunk[1] = J; chunk[2] = K;
+      //printf(" c = %i, C = %i\n", c, C);
+      chunks[o][C].push_back(chunk);
+    }
+  }
+
+#ifdef CHUNKS
+  planes = chunks;
+#endif
+
+//  for (int o = 0; o < 8; ++o)
+//  {
+//    printf("octant %i\n", o);
+//  for (int i = 0; i < chunks[0].size(); ++i)
+//  {
+//    printf("  chunk %i \n", i);
+//    for (int j = 0; j < chunks[0][i].size(); ++j)
+//    {
+//      printf("   (%i, %i, %i) \n",
+//        chunks[o][i][j][0], chunks[o][i][j][1], chunks[o][i][j][2]);
+//    }
+//  }
+//  }
 
   // block indices
   i_s.resize(nbx, 0);

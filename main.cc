@@ -40,8 +40,8 @@ int main(int argc, char* argv[])
             args[7],args[8],args[9],args[10],args[11]);
   }
   Solver test(args[0], args[1], args[2], args[3],args[4],args[5],args[6], args[7],
-  		args[8],args[9],args[10]);
-  test.Calculate(order, args[11]);
+  		args[8],args[9],args[10], args[11]);
+  test.Calculate(order);
   return 0;
 }
 

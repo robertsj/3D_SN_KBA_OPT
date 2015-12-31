@@ -2,8 +2,8 @@
 #include "auxiliary_function.hh"
 #include <numeric>
 #include <string.h>
-#define NOBOUNDX
-#define NOBOUNDY
+//#define NOBOUNDX
+//#define NOBOUNDY
 #define NOBOUNDZ
 
 #define ALIGN __attribute__((aligned(64)))
@@ -24,9 +24,8 @@ void Solver::sweep_esa_mod()
 #endif
 #ifndef NOBOUNDZ
   real bd_info_z[mesh.nby][mesh.nbx][mesh.ybs[0]][mesh.xbs[0]][n_a] ALIGN;
-#else
-  real bd_info_z[mesh.nby][mesh.nbx][n_a];
 #endif
+
 
   real muDelta[n_a] ALIGN;
   real etaDelta[n_a] ALIGN;
@@ -50,6 +49,11 @@ void Solver::sweep_esa_mod()
 #pragma omp parallel num_threads(nTs)
   {
     int TID = omp_get_thread_num();
+
+#ifdef NOBOUNDZ
+    real bd_info_z[mesh.ybs[0]][mesh.xbs[0]][n_a];
+#endif
+
     // GROUPS
     for (int g = 0; g < n_eg; ++g)
     {
@@ -61,22 +65,25 @@ void Solver::sweep_esa_mod()
           // set all cell edge fluxes to zero.  this is consistent with vacuum.
 
 #ifndef NOBOUNDX
-        SetValue(&bd_info_x[0][0][0][0][0],
-            mesh.nbz*mesh.nby*mesh.zbs[0]*mesh.ybs[0]*n_a, 0.0);
+          SetValue(&bd_info_x[0][0][0][0][0],
+              mesh.nbz*mesh.nby*mesh.zbs[0]*mesh.ybs[0]*n_a, 0.0);
 #endif
 #ifndef NOBOUNDY
-        SetValue(&bd_info_y[0][0][0][0][0],
-            mesh.nbz*mesh.nbx*mesh.zbs[0]*mesh.xbs[0]*n_a, 0.0);
+          SetValue(&bd_info_y[0][0][0][0][0],
+              mesh.nbz*mesh.nbx*mesh.zbs[0]*mesh.xbs[0]*n_a, 0.0);
 #endif
 #ifndef NOBOUNDZ
-        SetValue(&bd_info_z[0][0][0][0][0],
-            mesh.nby*mesh.nbx*mesh.ybs[0]*mesh.xbs[0]*n_a, 0.0);
+          SetValue(&bd_info_z[0][0][0][0][0],
+              mesh.nby*mesh.nbx*mesh.ybs[0]*mesh.xbs[0]*n_a, 0.0);
 #else
-        SetValue(&bd_info_z[0][0][0],
-            mesh.ybs[0]*mesh.xbs[0]*n_a, 0.0);
+          SetValue(&bd_info_z[0][0][0],
+              mesh.ybs[0]*mesh.xbs[0]*n_a, 0.0);
 #endif
         }
 
+#ifdef NOBOUNDZ
+        SetValue(&bd_info_z[0][0][0], mesh.ybs[0]*mesh.xbs[0]*n_a, 0.0);
+#endif
         // PLANES
         for (int p = 0; p < mesh.planes[o].size(); ++p)
         {
@@ -147,8 +154,8 @@ void Solver::sweep_esa_mod()
                     c[a] += eps_y * bd_info_y[k_b][i_b][kk][ii][a]; // 2
 #endif
 #ifdef NOBOUNDZ
-                    c[a] += eps_z * bdz;
-                    //c[a] += eps_z * bd_info_z[jj][ii][a]; // 2
+                    //c[a] += eps_z * bdz;
+                    c[a] += eps_z * bd_info_z[jj][ii][a]; // 2
 #else
                     c[a] += eps_z * bd_info_z[j_b][i_b][jj][ii][a]; // 2     ... 12+div
 #endif
@@ -169,8 +176,8 @@ void Solver::sweep_esa_mod()
                     bd_info_y[k_b][i_b][kk][ii][a] = 2.0*c[a] - bd_info_y[k_b][i_b][kk][ii][a]; // 1
 #endif
 #ifdef NOBOUNDZ
-                    bdz = 2.0*c[a] - bdz; // 1
-                    //bd_info_z[jj][ii][a] = 2.0*c[a] - bd_info_z[jj][ii][a];
+                    //bdz = 2.0*c[a] - bdz; // 1
+                    bd_info_z[jj][ii][a] = 2.0*c[a] - bd_info_z[jj][ii][a];
 #else
                     bd_info_z[j_b][i_b][jj][ii][a] = 2.0*c[a] - bd_info_z[j_b][i_b][jj][ii][a]; // 1
 #endif

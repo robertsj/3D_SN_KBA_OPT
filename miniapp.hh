@@ -83,9 +83,9 @@ public:
 
 	Solver(int n_eg_in, int n_a_in, int cm_xy_in, int fm_xy_in,
 			int cm_z_in, int fm_z_in, int upscatter_in, int iter_in,
-			int xbs, int ybs, int zbs);
+			int xbs, int ybs, int zbs, int nTs_in);
 	~Solver();
-	void Calculate(string sweepfun, int nTs_in);
+	void Calculate(string sweepfun);
 	void get_quadrature();
 
 	void sweep_aes(int start_TID[]);

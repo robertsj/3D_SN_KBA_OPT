@@ -26,13 +26,14 @@ const int factor = 8;
 //----------------------------------------------------------------------------//
 Solver::Solver(int n_eg_in, int n_a_in, int cm_xy_in, int fm_xy_in,
 		int cm_z_in, int fm_z_in, int upscatter_in, int iter_in,
-		int xbs, int ybs, int zbs)
+		int xbs, int ybs, int zbs, int nTs_in)
 : n_eg(n_eg_in)
 , n_a(n_a_in)
 , upscatter(upscatter_in)
 , iter(iter_in)
 , blocksize_z(zbs)
-, mesh(cm_xy_in, fm_xy_in, cm_z_in, fm_z_in, xbs, ybs, zbs)
+, nTs(nTs_in)
+, mesh(cm_xy_in, fm_xy_in, cm_z_in, fm_z_in, xbs, ybs, zbs, nTs)
 {
 
 	cout << "input parameters \n" << "# of energy groups: " << n_eg << "\n"
@@ -45,7 +46,9 @@ Solver::Solver(int n_eg_in, int n_a_in, int cm_xy_in, int fm_xy_in,
 			<< "# of running iterations: " << iter << "\n"
 			<< "x block size: " << xbs << endl
 			<< "y block size: " << ybs << endl
-			<< "z block size: " << zbs << endl;
+			<< "z block size: " << zbs << endl
+      << "number threads: " << nTs << endl;
+
 	//mesh.print_summary();
 	phi_size = mesh.ncell * n_eg;
 	phi.resize(phi_size);
@@ -120,9 +123,9 @@ void Solver::get_quadrature()
 	}
 }
 
-void Solver::Calculate(std::string order, int num_threads)
+void Solver::Calculate(std::string order)
 {
-	nTs = num_threads;
+	//nTs = num_threads;
 	cout << "# of threads is " << nTs << endl;
 	// initiate values for old sweep
 	N = sqrt(nTs);
@@ -286,7 +289,7 @@ void Solver::Calculate(std::string order, int num_threads)
     printf("TIME    = %f \n", time_used_sweep);
     printf("FLOPS   = %f \n", flop);
 	printf("GLOPS/s = %f \n", gflops);
-	double peak = factor*3.1*num_threads;
+	double peak = factor*3.1*nTs;
 	printf("PEAK    = %f \n", peak);
     printf("EFF o/o = %f \n", gflops/peak*100.);
 }
