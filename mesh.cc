@@ -159,9 +159,9 @@ Mesh::Mesh(int cm_xy, int fm_xy, int cm_z, int fm_z, int bs_x, int bs_y, int bs_
     }
   }
 
-#ifdef CHUNKS
+//#ifdef CHUNKS
   planes = chunks;
-#endif
+//#endif
 
 //  for (int o = 0; o < 8; ++o)
 //  {
@@ -216,8 +216,8 @@ void Mesh::print_blocks() const
         int j1=get_block_j(o, block[Y], ybs[block[Y]]-1);
         int k0=get_block_k(o, block[Z], 0);
         int k1=get_block_k(o, block[Z], zbs[block[Z]]-1);
-        printf("octant=%i, plane=%i, block=%i, i=%i-->%i, j=%i-->%i, k=%i-->%i\n",
-            o, p, b, i0, i1, j0, j1, k0, k1);
+        printf("octant=%i, plane=%i, block=%i, i=%i-->%i, j=%i-->%i, k=%i-->%i, t=%i\n",
+            o, p, b, i0, i1, j0, j1, k0, k1, (block[X] + block[Y]*nbx)%nt);
       }
       print_line();
     }

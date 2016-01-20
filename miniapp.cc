@@ -49,7 +49,8 @@ Solver::Solver(int n_eg_in, int n_a_in, int cm_xy_in, int fm_xy_in,
 			<< "z block size: " << zbs << endl
       << "number threads: " << nTs << endl;
 
-	//mesh.print_summary();
+	mesh.print_summary();
+  mesh.print_blocks();
 	phi_size = mesh.ncell * n_eg;
 	phi.resize(phi_size);
 	Q.resize(phi_size);
